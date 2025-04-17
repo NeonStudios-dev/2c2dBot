@@ -2,7 +2,7 @@
 
 ## Overview
 UtilBot is a Minecraft chat bot for server management and player entertainment. It provides command handling, music playback, and administrative functions.
-- Playtesting available on `play.neonstudios.dev
+- Playtesting available on `play.neonstudios.dev` 
 ## Configuration
 - Default command prefix: `!` (configurable)
 - Admin username: `FlameGrowl`
