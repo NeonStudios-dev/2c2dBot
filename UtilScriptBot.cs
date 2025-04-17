@@ -20,7 +20,7 @@ class UtilBot : ChatBot
     private Random random = new Random();
     private bool maintenanceMode = false; // Fixed the typo and modifier placement
     private readonly Dictionary<string, Command> commands;
-    private bool debugMode = true;
+    private bool debugMode = false;
     private readonly Dictionary<string, DateTime> userCooldowns = new Dictionary<string, DateTime>();
     private const int COOLDOWN_SECONDS = 5;
     private bool fakeNormalPlayer = false; // Add this field for fake mode
