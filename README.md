@@ -4,10 +4,10 @@
 UtilBot is a Minecraft chat bot for server management and player entertainment. It provides command handling, music playback, and administrative functions.
 
 ## Configuration
-- Default command prefix: `.` (configurable)
+- Default command prefix: `!` (configurable)
 - Admin username: `FlameGrowl`
 - Command cooldown: 5 seconds (for non-admin users)
-- Initialization: `MCC.LoadBot(new UtilBot("!"));`
+- Initialization: `MCC.LoadBot(new UtilBot());`
 
 ## Commands
 
