@@ -11,7 +11,7 @@ MCC.LoadBot(new UtilBot()); // or any other prefix like ".", "/", "$", etc.
 /// </summary>
 class UtilBot : ChatBot
 {
-    private const string DEFAULT_PREFIX = ".";
+    private const string DEFAULT_PREFIX = "!";
     private readonly string commandPrefix;
 
     // Admin User name
@@ -50,12 +50,45 @@ class UtilBot : ChatBot
                 SendText($"/msg {username} Done. Cleared all items in loaded Chunk. ;D");
             }, adminOnly: true, availableInMaintenance: true);
         
-        RegisterCommand($"{commandPrefix}mt", "Toggle maintenance mode", 
-            (username, _) => {
+        RegisterCommand($"{commandPrefix}mt", "Toggle maintenance mode [-vb (verbose) -dg (debug)]", 
+            (username, args) => {
+                if (!IsAdmin(username))
+                {
+                    SendText($"/msg {username} This command is admin-only.");
+                    return;
+                }
+
+                // Parse arguments
+                bool setVerbose = args.Contains("-vb");
+                bool setDebug = args.Contains("-dg");
+
+                // Toggle maintenance mode
                 maintenanceMode = !maintenanceMode;
                 string status = maintenanceMode ? "enabled" : "disabled";
+                
+                // Set additional modes if flags are present
+                if (maintenanceMode)
+                {
+                    if (setVerbose) verboseMode = true;
+                    if (setDebug) debugMode = true;
+                }
+                else
+                {
+                    // Always reset modes when disabling maintenance mode
+                    verboseMode = false;
+                    debugMode = false;
+                }
+
+                // Send status messages
                 SendText($"/msg {username} Maintenance mode {status}");
                 SendText($"/say Bot is now in {(maintenanceMode ? "maintenance mode" : "normal mode")}");
+
+                // Update status messages for debug/verbose modes
+                if (setVerbose || verboseMode)
+                    SendText($"/msg {username} Verbose mode {(verboseMode ? "enabled" : "disabled")}");
+                if (setDebug || debugMode)
+                    SendText($"/msg {username} Debug mode {(debugMode ? "enabled" : "disabled")}");
+                    
             }, adminOnly: true, availableInMaintenance: true);
 
         // Add debug toggle command
@@ -211,8 +244,12 @@ class UtilBot : ChatBot
             });
 
         SendText($"/msg {AdminName} UtilBot initialized successfully.");
+        RegisterCommand($"{commandPrefix}ip", "Get server IP address", 
+            (username, _) => {
+                SendText($"/msg {username} Server IP: {GetServerIP()}");
+            }, adminOnly: false, availableInMaintenance: true);
     }
-
+    
     /// <summary>
     /// Represents a bot command with its properties and execution logic
     /// </summary>
@@ -446,4 +483,10 @@ class UtilBot : ChatBot
         // based on your server API capabilities
         return "1.20.4"; // Replace with actual version
     }
+    private string GetServerIP()
+    {
+        // This is a placeholder - replace with actual implementation
+        // based on your server API capabilities
+        return "play.neonstudios.dev";
+}
 }
