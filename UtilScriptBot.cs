@@ -1,7 +1,7 @@
 //MCCScript 1.0
 
 // You can easily change the prefix here
-MCC.LoadBot(new UtilBot("!")); // or any other prefix like ".", "/", "$", etc.
+MCC.LoadBot(new UtilBot()); // or any other prefix like ".", "/", "$", etc.
 
 //MCCScript Extensions
 
@@ -25,6 +25,7 @@ class UtilBot : ChatBot
     private const int COOLDOWN_SECONDS = 5;
     private bool fakeNormalPlayer = false; // Add this field for fake mode
     private bool verboseMode = false; // Add this field for verbose mode
+    private static readonly DateTime startupTime = DateTime.Now; // Store bot startup time
 
     public UtilBot(string prefix = DEFAULT_PREFIX)
     {
@@ -119,6 +120,94 @@ class UtilBot : ChatBot
                 SendText($"/msg {username} - playamne-x-nateki-midnight");
                 SendText($"/msg {username} - x-slide");
                 SendText($"/msg {username} - Zeldas-Lullaby");
+            });
+
+         RegisterCommand($"{commandPrefix}info", "Get detailed information about a command", 
+            (username, args) => {
+                if (string.IsNullOrWhiteSpace(args))
+                {
+                    SendText($"/msg {username} Usage: {commandPrefix}info <command_name>");
+                    SendText($"/msg {username} Example: {commandPrefix}info ping");
+                    return;
+                }
+
+                string commandName = $"{commandPrefix}{args.Trim()}";
+                if (commands.TryGetValue(commandName, out Command cmd))
+                {
+                    SendText($"/msg {username} Command: {cmd.Name}");
+                    SendText($"/msg {username} Description: {cmd.Description}");
+                    SendText($"/msg {username} Admin only: {(cmd.AdminOnly ? "Yes" : "No")}");
+                    SendText($"/msg {username} Available in maintenance: {(cmd.AvailableInMaintenance ? "Yes" : "No")}");
+                    
+                    // Additional command-specific information
+                    switch (args.ToLower().Trim())
+                    {
+                        case "ping":
+                            SendText($"/msg {username} Shows the current server latency in milliseconds.");
+                            break;
+                        case "tps":
+                            SendText($"/msg {username} Shows the current server Ticks Per Second (TPS).");
+                            break;
+                        case "cl":
+                            SendText($"/msg {username} Clears all dropped items in loaded chunks.");
+                            SendText($"/msg {username} Note: This is an admin-only command.");
+                            break;
+                        case "mt":
+                            SendText($"/msg {username} Toggles maintenance mode on/off.");
+                            SendText($"/msg {username} When enabled, most commands become admin-only.");
+                            break;
+                        case "debug":
+                            SendText($"/msg {username} Toggles debug mode for detailed logging.");
+                            SendText($"/msg {username} Useful for troubleshooting bot issues.");
+                            break;
+                        case "verbose":
+                            SendText($"/msg {username} Toggles verbose mode for detailed command execution info.");
+                            break;
+                        case "play":
+                            SendText($"/msg {username} Plays music from the available song list.");
+                            SendText($"/msg {username} Usage: !play <song_name>");
+                            SendText($"/msg {username} Use !songs to see available songs.");
+                            break;
+                    }
+                }
+                else
+                {
+                    SendText($"/msg {username} Command '{commandName}' not found.");
+                    SendText($"/msg {username} Use {commandPrefix}help to see available commands.");
+                }
+            });
+
+        RegisterCommand($"{commandPrefix}sinfo", "Display server information", 
+            (username, _) => {
+                // Get TPS
+                double currentTPS = GetServerTPS();
+                string tpsColor = currentTPS >= 19.5 ? "green" : 
+                                 currentTPS >= 15 ? "yellow" : "red";
+
+                // Get player count
+                var players = GetOnlinePlayers();
+                int playerCount = players.Count(); // Add parentheses to call Count method
+                int maxPlayers = GetMaxPlayers();
+
+                // Get server uptime
+                TimeSpan uptime = GetServerUptime();
+                string uptimeStr = $"{uptime.Days}d {uptime.Hours}h {uptime.Minutes}m";
+
+                // Get memory usage (in MB)
+                long usedMemory = GC.GetTotalMemory(false) / 1024 / 1024;
+                long maxMemory = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes / 1024 / 1024;
+                
+                // Send formatted server info
+                SendText($"/msg {username} === Server Information ===");
+                SendText($"/msg {username} TPS: {currentTPS:F1}");
+                SendText($"/msg {username} Players: {playerCount-1}/{maxPlayers}");
+                SendText($"/msg {username} Memory: {usedMemory}MB/{maxMemory}MB");
+                SendText($"/msg {username} Uptime: {uptimeStr}");
+                
+                if (verboseMode && IsAdmin(username))
+                {
+                    SendText($"/msg {username} Server Version: {GetServerVersion()}");
+                }
             });
 
         SendText($"/msg {AdminName} UtilBot initialized successfully.");
@@ -336,5 +425,25 @@ class UtilBot : ChatBot
     private bool IsAdmin(string username)
     {
         return !fakeNormalPlayer && username == AdminName;
+    }
+
+    private int GetMaxPlayers()
+    {
+        // This is a placeholder - replace with actual implementation
+        // based on your server API capabilities
+        return 20; // Default max players
+    }
+
+    private TimeSpan GetServerUptime()
+    {
+        // Use DateTime.Now instead of game ticks since we can't access them
+        return DateTime.Now - startupTime;
+    }
+
+    private string GetServerVersion()
+    {
+        // This is a placeholder - replace with actual implementation
+        // based on your server API capabilities
+        return "1.20.4"; // Replace with actual version
     }
 }
