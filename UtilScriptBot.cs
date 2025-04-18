@@ -23,7 +23,7 @@ class UtilBot : ChatBot
     private bool debugMode = false;
     private readonly Dictionary<string, DateTime> userCooldowns = new Dictionary<string, DateTime>();
     private const int COOLDOWN_SECONDS = 5;
-    private bool fakeNormalPlayer = false; // Add this field for fake mode
+    private bool fakeNormalPlayer = true; // Add this field for fake mode
     private bool verboseMode = false; // Add this field for verbose mode
     private static readonly DateTime startupTime = DateTime.Now; // Store bot startup time
 
@@ -212,6 +212,10 @@ class UtilBot : ChatBot
                             SendText($"/msg {username} Usage: !gayrate [player_name]");
                             SendText($"/msg {username} If no player is specified, uses your own name.");
                             break;
+                        case "stop":
+                            SendText($"/msg {username} Stops any currently playing music.");
+                            SendText($"/msg {username} Usage: !stop");
+                            break;
                     }
                 }
                 else
@@ -273,6 +277,13 @@ class UtilBot : ChatBot
                 string percentage = GenerateRandomPercentage();
                 SendText($"/say {targetPlayer} is {percentage} gay!");
             });
+
+        RegisterCommand($"{commandPrefix}stop", "Stop currently playing music", 
+            (username, _) => {
+                SendText($"/stopsound {username}");
+                SendText($"/title {username} actionbar [\"\",{{\"text\":\"Music stopped\",\"color\":\"red\"}}]");
+            });
+
         RegisterCommand($"{commandPrefix}smt", "enable Sever Maintenance !!!Requiers Maintenance Plugin!!!",
         (username, args) => {
             if (!IsAdmin(username))
