@@ -243,7 +243,7 @@ class UtilBot : ChatBot
                 
                 // Send formatted server info
                 SendText($"/msg {username} === Server Information ===");
-                SendText($"/msg {username} TPS: {tpsColor} -> {currentTPS:F1}");
+                SendText($"/msg {username} TPS: {currentTPS:F1} => {tpsColor}");
                 SendText($"/msg {username} Players: {playerCount-1}/{maxPlayers}");
                 SendText($"/msg {username} Memory: {usedMemory}MB/{maxMemory}MB");
                 SendText($"/msg {username} Uptime: {uptimeStr}");
@@ -273,6 +273,86 @@ class UtilBot : ChatBot
                 string percentage = GenerateRandomPercentage();
                 SendText($"/say {targetPlayer} is {percentage} gay!");
             });
+        RegisterCommand($"{commandPrefix}smt", "enable Sever Maintenance !!!Requiers Maintenance Plugin!!!",
+        (username, args) => {
+            if (!IsAdmin(username))
+            {
+                SendText($"/msg {username} This command is admin-only.");
+                return;
+            }
+        bool smt = false;
+        if (args.ToLower() == "on")
+        {
+            smt = true;
+            SendText($"/msg {username} Server Maintenance is now enabled.");
+            SendText($"/mt on");
+        }
+        else if (args.ToLower() == "off")
+        {
+            smt = false;
+            SendText($"/msg {username} Server Maintenance is now disabled.");
+            SendText($"/mt off");
+        }
+        else
+        {
+            SendText($"/msg {username} Usage: {commandPrefix}smt <on/off>");
+            return;
+        }
+        
+        }, adminOnly: true, availableInMaintenance: true);
+
+        
+        RegisterCommand($"{commandPrefix}vmt", "enable Server Maintenance on velocity server !!!Requires Maintenance Plugin!!! Usage: !vmt [server] <on|off>",
+        (username, args) => {
+            if (!IsAdmin(username))
+            {
+                SendText($"/msg {username} This command is admin-only.");
+                return;
+            }
+
+            string[] arguments = args.Split(' ');
+            string server = "";
+            string action = "";
+
+            // Parse arguments based on whether server is specified
+            if (arguments.Length == 1)
+            {
+                // Only on/off provided
+                action = arguments[0].ToLower();
+            }
+            else if (arguments.Length == 2)
+            {
+                // Both server and on/off provided
+                server = arguments[0].ToLower();
+                action = arguments[1].ToLower();
+            }
+            else
+            {
+                SendText($"/msg {username} Usage: {commandPrefix}vmt [server] <on/off>");
+                return;
+            }
+
+            bool smt = false;
+            string serverPrefix = !string.IsNullOrEmpty(server) ? $"{server}" : "";
+
+            if (action == "on")
+            {
+                smt = true;
+                SendText($"/msg {username} Server Maintenance is now enabled{(server != "" ? $" for {server}" : "")}.");
+                SendText($"/mt on {serverPrefix}");
+            }
+            else if (action == "off")
+            {
+                smt = false;
+                SendText($"/msg {username} Server Maintenance is now disabled{(server != "" ? $" for {server}" : "")}.");
+                SendText($"/mt off {serverPrefix}");
+            }
+            else
+            {
+                SendText($"/msg {username} Usage: {commandPrefix}vmt [server] <on/off>");
+                return;
+            }
+        }, adminOnly: true, availableInMaintenance: true);
     }
     
     /// <summary>
