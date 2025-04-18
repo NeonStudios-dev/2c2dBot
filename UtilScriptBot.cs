@@ -201,6 +201,17 @@ class UtilBot : ChatBot
                             SendText($"/msg {username} Usage: !play <song_name>");
                             SendText($"/msg {username} Use !songs to see available songs.");
                             break;
+                        case "doxx":
+                            SendText($"/msg {username} Generates a random fake IP address for a player.");
+                            SendText($"/msg {username} Usage: !doxx [player_name]");
+                            SendText($"/msg {username} If no player is specified, uses your own name.");
+                            SendText($"/msg {username} Note: This is just for entertainment, generates completely random numbers.");
+                            break;
+                        case "chance":
+                            SendText($"/msg {username} Generates a random percentage (0.00% to 100.00%) for a player.");
+                            SendText($"/msg {username} Usage: !gayrate [player_name]");
+                            SendText($"/msg {username} If no player is specified, uses your own name.");
+                            break;
                     }
                 }
                 else
@@ -232,7 +243,7 @@ class UtilBot : ChatBot
                 
                 // Send formatted server info
                 SendText($"/msg {username} === Server Information ===");
-                SendText($"/msg {username} TPS: {currentTPS:F1}");
+                SendText($"/msg {username} TPS: {tpsColor} -> {currentTPS:F1}");
                 SendText($"/msg {username} Players: {playerCount-1}/{maxPlayers}");
                 SendText($"/msg {username} Memory: {usedMemory}MB/{maxMemory}MB");
                 SendText($"/msg {username} Uptime: {uptimeStr}");
@@ -248,6 +259,20 @@ class UtilBot : ChatBot
             (username, _) => {
                 SendText($"/msg {username} Server IP: {GetServerIP()}");
             }, adminOnly: false, availableInMaintenance: true);
+
+        RegisterCommand($"{commandPrefix}doxx", "Generate a fake IP address for a player", 
+            (username, args) => {
+                string targetPlayer = !string.IsNullOrWhiteSpace(args) ? args.Trim() : username;
+                string fakeIP = GenerateFakeIP();
+                SendText($"/say {targetPlayer}'s IP address is totally {fakeIP}");
+            });
+
+        RegisterCommand($"{commandPrefix}gayrate", "Generate a random percentage for a player", 
+            (username, args) => {
+                string targetPlayer = !string.IsNullOrWhiteSpace(args) ? args.Trim() : username;
+                string percentage = GenerateRandomPercentage();
+                SendText($"/say {targetPlayer} is {percentage} gay!");
+            });
     }
     
     /// <summary>
@@ -488,5 +513,17 @@ class UtilBot : ChatBot
         // This is a placeholder - replace with actual implementation
         // based on your server API capabilities
         return "play.neonstudios.dev";
-}
+    }
+
+    // Add this method to generate random IP addresses
+    private string GenerateFakeIP()
+    {
+        return $"{random.Next(1, 255)}.{random.Next(0, 255)}.{random.Next(0, 255)}.{random.Next(1, 255)}";
+    }
+
+    // Add this helper method to generate random percentage
+    private string GenerateRandomPercentage()
+    {
+        return $"{random.NextDouble() * 100:F2}%";
+    }
 }
