@@ -527,4 +527,3 @@ class UtilBot : ChatBot
         return $"{random.NextDouble() * 100:F2}%";
     }
 }
-
