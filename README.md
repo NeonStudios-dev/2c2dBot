@@ -18,6 +18,10 @@ UtilBot is a Minecraft chat bot for server management and player entertainment. 
 | `!ping` | Check server latency | No | No |
 | `!tps` | Check server TPS | No | No |
 | `!songs` | Shows available songs | No | No |
+| `!sinfo` | Display server information | No | No |
+| `!ip` | Get server IP address | No | Yes |
+| `!doxx` | Generate fake IP for player | No | No |
+| `!gayrate` | Generate random percentage | No | No |
 
 ### Admin Commands
 | Command | Description | Maintenance Available |
@@ -41,6 +45,40 @@ Available songs:
 - playamne-x-nateki-midnight
 - x-slide
 - Zeldas-Lullaby
+
+### Server Information
+The `!sinfo` command displays:
+- TPS (color-coded: green >19.5, yellow >15, red <15)
+- Current/max player count
+- Memory usage (used/total MB)
+- Server uptime in days, hours, minutes
+- Server version (admin only, verbose mode)
+
+### Fun Commands
+
+#### IP Generator (!doxx)
+- Usage: `!doxx [player_name]`
+- Generates a random fake IP address
+- If no player specified, uses command sender
+- Outputs in public chat with formatting
+- Includes disclaimer about being randomly generated
+
+#### Gayrate (!gayrate)
+- Usage: `!chance [player_name]`
+- Generates random percentage (0.00% to 100.00%)
+- If no player specified, uses command sender
+- Outputs in public chat with color formatting
+- Two decimal place precision
+
+### Command Examples
+```
+!doxx Player2         -> "Player2's IP address is totally 192.168.1.1..."
+!gayrate              -> "YourName's chance is 42.69%!"
+!gayrate OtherPlayer  -> "OtherPlayer's chance is 99.99%!"
+!sinfo               -> Shows detailed server statistics
+```
+
+Note: All fun commands are purely for entertainment purposes and generate completely random values.
 
 ## Special Modes
 
